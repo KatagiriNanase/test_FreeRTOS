@@ -21,13 +21,13 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
-// int fputc(int ch, FILE *f)
-// {
-//     /* ����һ���ֽ����ݵ�����DEBUG_USART */
-//     HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 1000);    
+int fputc(int ch, FILE *f)
+{
+    /* ����һ���ֽ����ݵ�����DEBUG_USART */
+    HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 1000);    
     
-//     return (ch);
-// }
+    return (ch);
+}
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;

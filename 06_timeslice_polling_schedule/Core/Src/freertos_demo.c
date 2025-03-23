@@ -17,6 +17,11 @@ void start_task(void* pvParameters);
 TaskHandle_t task1_handle;
 void task1(void* pvParameters);
 
+/* Task2任务配置 */
+#define TASK2_STACK 128
+#define TASK2_PRIORITY 2
+TaskHandle_t task2_handle;
+void task2(void* pvParameters);
 
 /**
  *@brief 启动FreeRTOS
@@ -54,6 +59,14 @@ void start_task(void* pvParameters)
         (UBaseType_t)TASK1_PRIORITY,
         (TaskHandle_t*)&task1_handle);
 
+    /* 创建Task2 */
+    xTaskCreate((TaskFunction_t)task2,
+        (char*)"task2",
+        (configSTACK_DEPTH_TYPE)TASK2_STACK,
+        (void*)NULL,
+        (UBaseType_t)TASK2_PRIORITY,
+        (TaskHandle_t*)&task2_handle);
+
     /* 启动任务只需要用一次，用完删除自身 */
     vTaskDelete(NULL);
 
@@ -61,7 +74,7 @@ void start_task(void* pvParameters)
     taskEXIT_CRITICAL();
 }
 
-
+_Bool led1_flag;
 /**
  *@brief LED1每500ms闪烁一次
  *
@@ -69,26 +82,28 @@ void start_task(void* pvParameters)
  */
 void task1(void* pvParameters)
 {
-    uint8_t key_num;
+    uint16_t task1_count;
     while (1)
     {
-				key_num=Key_Detect();
-        if (key_num == KEY1_PRESS)
-        {
-            /* 关闭FreeRTOS管理的所有中断 */
-            portDISABLE_INTERRUPTS();
-            printf("关闭中断\r\n");
-        }
-        else if (key_num == KEY2_PRESS)
-        {
-            /* 开启FreeRTOS管理的中断 */
-            portENABLE_INTERRUPTS();
-            printf("开启中断\r\n");
-        }
-
+        printf("task1运行[%d]次\r\n", ++task1_count);
+        // vTaskDelay(500);         如果使用了FreeRTOS的延时函数，就会切换到其他任务了，观察不到在这个函数内执行了多久
+        HAL_Delay(10);
     }
 
 }
 
-
-
+/**
+ *@brief LED2每500ms闪烁一次
+ *
+ * @param pvParameters
+ */
+void task2(void* pvParameters)
+{
+    uint16_t task2_count;
+    while (1)
+    {
+        printf("task2运行[%d]次\r\n", ++task2_count);
+        // vTaskDelay(500);         如果使用了FreeRTOS的延时函数，就会切换到其他任务了，观察不到在这个函数内执行了多久
+        HAL_Delay(10);
+    }
+}
