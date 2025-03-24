@@ -74,7 +74,7 @@ void start_task(void* pvParameters)
     taskEXIT_CRITICAL();
 }
 
-_Bool led1_flag;
+
 /**
  *@brief LED1每500ms闪烁一次
  *
@@ -84,13 +84,10 @@ void task1(void* pvParameters)
 {
     while (1)
     {
-        if (led1_flag == 0)
-        {
-            printf("task1运行\n");
-            LED_Toggle(LED1_Pin);
-            vTaskDelay(500);
-        }
-
+        printf("task1运行\n");
+        LED_Toggle(LED1_Pin);
+        HAL_Delay(20);
+        vTaskDelay(500);
     }
 
 }
@@ -103,10 +100,13 @@ char task_runtime_info[250];
  */
 void task2(void* pvParameters)
 {
+    TickType_t pxPreviousWakeTime = xTaskGetTickCount();
+    TickType_t xTimeIncrement = 500;
     while (1)
     {
-        vTaskGetRunTimeStats(task_runtime_info);
-        printf("%s\n", task_runtime_info);
-        vTaskDelay(500);
+        printf("task2运行\n");
+        LED_Toggle(LED2_Pin);
+        HAL_Delay(20);
+        xTaskDelayUntil(&pxPreviousWakeTime,xTimeIncrement);
     }
 }

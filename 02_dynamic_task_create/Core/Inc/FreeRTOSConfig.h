@@ -82,5 +82,6 @@
 #define vPortSVCHandler     SVC_Handler
 #define INCLUDE_xTaskGetSchedulerState   1
 
+
 #endif /* FREERTOS_CONFIG_H */
 

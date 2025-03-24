@@ -53,4 +53,77 @@ vTaskList(bugReport);  // 💥 内存溢出→系统扑街！
    
 2025年3月23日   
 
+---    
+
+## 🌸 FreeRTOS时间管理特训
+
+✨ *"任务执行时间就像少女的年龄～要好好记录下来哦！(๑>ᴗ<๑)♡"* ✨
+
+
+
+### 🚀 今日技能点满
+### ⏱️ **任务执行时间快照**
+
+```c
+// 在FreeRTOSConfig.h召唤时间精灵
+#define configGENERATE_RUN_TIME_STATS  1  // 🧚♀️ 开启时间统计魔法
+#define configUSE_STATS_FORMATTING_FUNCTIONS 1  // 📊 解锁报表格式转换
+
+// 在stm32中配置时间统计专用定时器（如TIM2）
+void ConfigureTimeStatsTimer() {
+    __HAL_RCC_TIM2_CLK_ENABLE();
+    TIM2->PSC = SystemCoreClock/1000000 -1;  // 1us精度✨
+    TIM2->ARR = 0xFFFFFFFF;  // 32位自由奔跑模式
+    HAL_TIM_Base_Start(&htim2);
+}
+```
+### ⏰ 延时魔法对比表   
+| 魔法类型 | 咒语  | 特性  | 使用场景 |
+| :---    | :--: | :--: | ---:   |
+| 相对延时 | vTaskDelay()  | 从当前开始计算  | 简单延时 |
+| 绝对延时 | xTaskDelayUntil()  | 保持固定周期(防累积误差)  | 心跳任务/精确周期 |   
+```c
+// 绝对延时の正确姿势
+TickType_t xLastWakeTime = xTaskGetTickCount();
+while(1) {
+    LED_Toggle();
+    xTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(100));  // 精确100ms周期✨
+}
+
+```   
+### 🐾 掉进时间漩涡
+```c
+// (╯°□°）╯ 当忘记启动统计定时器时...
+void vTaskGetRunTimeStats(char *pcBuffer);  
+// 输出：全任务运行时间都是0%！💢
+
+// 绝对延时的危险操作
+xLastWakeTime += pdMS_TO_TICKS(100);  // 手动修改基准时间→时间线崩坏！
+
+```   
+**解决方案：**
+
+- 用CubeMX配置专用定时器并自动启动
+
+- 永远让xTaskDelayUntil()自己管理基准时间～   
+
+### 📊 时间统计报表范例
+```text
+任务名  状态   优先级  剩余栈  运行时间(%)  
+LED     R     1       88      12.3%  
+UART    B     2       120     45.6%  
+IDLE    R     0       64      42.1%   👻
+```
+>*IDLE君又在偷偷摸鱼啦～）*   
+
+>"绝对延时就像约会时间～迟到的话会被其他任务NTR的哦！(๑•́ ₃ •̀๑)"
+>—— 看着调度器的VS Code姬      
+
+
+2025年3月24日   
+
 --- 
+
+
+
+

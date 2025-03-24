@@ -18,7 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -45,7 +44,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-volatile unsigned long ulHighFrequencyTimerTicks;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -89,10 +88,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART1_UART_Init();
-  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
-  /* 开启定时器 */
-  HAL_TIM_Base_Start_IT(&htim6);
   freertos_start();
 
   /* 注意：在进入FreeRTOS后面的代码，没机会执行 */
@@ -170,10 +166,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
-  if(htim->Instance==TIM6)
-  {
-    ulHighFrequencyTimerTicks++;
-  }
+
   /* USER CODE END Callback 1 */
 }
 
